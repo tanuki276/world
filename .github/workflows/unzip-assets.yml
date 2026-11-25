@@ -1,0 +1,48 @@
+name: Unzip assets
+
+# リポジトリ直下に nucleus-assets-part*.zip が push されたら、自動で展開して
+# assets/ フォルダに追加し、zip 自体は削除してコミットする。
+on:
+  push:
+    paths:
+      - 'nucleus-assets-part*.zip'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: unzip-assets
+  cancel-in-progress: false
+
+jobs:
+  unzip:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract asset zips
+        run: |
+          shopt -s nullglob
+          zips=(nucleus-assets-part*.zip)
+          if [ ${#zips[@]} -eq 0 ]; then
+            echo "no asset zips found, skipping"
+            exit 0
+          fi
+          for z in "${zips[@]}"; do
+            echo "extracting $z"
+            unzip -o "$z" -d .
+            rm "$z"
+          done
+
+      - name: Commit extracted assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "nothing to commit"
+            exit 0
+          fi
+          git commit -m "assets: zip を展開して追加"
+          git push
