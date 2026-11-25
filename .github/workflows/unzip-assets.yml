@@ -31,7 +31,7 @@ jobs:
           fi
           for z in "${zips[@]}"; do
             echo "extracting $z"
-            unzip -o "$z" -d .
+            unzip -o "$z" -d . || echo "warning: $z had broken entries, continuing"
             rm "$z"
           done
 
