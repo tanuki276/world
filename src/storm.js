@@ -27,8 +27,8 @@ export function createStorm(scene, opts) {
   function setSky(k) { // k: 0 = clear, 1 = storm
     scene.background.setRGB(0.62 - 0.38 * k, 0.70 - 0.40 * k, 0.80 - 0.42 * k);
     scene.fog.color.copy(scene.background);
-    hemi.intensity = 0.85 - 0.45 * k;
-    sun.intensity = 1.6 - 1.05 * k;
+    hemi.intensity = 1.0 - 0.45 * k;
+    sun.intensity = 2.05 - 1.05 * k;
   }
   function strike(playerPos) {
     const a = Math.random() * Math.PI * 2, r = 14 + Math.random() * 34;

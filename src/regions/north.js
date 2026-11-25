@@ -18,14 +18,14 @@ export async function build(scene, ctx) {
     if (Math.abs(heightAt(x + 2.5, z) - h) > 2.2) continue;
     pp.push({ x, y: h - 0.15, z, ry: Math.random() * Math.PI * 2, s: 0.85 + Math.random() * 0.5 });
   }
-  group.add(scatterModel(pine.scene, pp));
+  group.add(scatterModel(pine.scene, pp, { vary: 0.12 }));
   const rock = await loadModel(new URL('../../assets/models/rock_07/rock_07_1k.gltf', import.meta.url).href);
   const rp = [];
   for (let i = 0; i < 24; i++) {
     const x = (Math.random() - 0.5) * 760, z = -210 - Math.random() * 230;
     rp.push({ x, y: heightAt(x, z) - 0.4, z, ry: Math.random() * Math.PI * 2, s: 1.2 + Math.random() * 2.6 });
   }
-  group.add(scatterModel(rock.scene, rp));
+  group.add(scatterModel(rock.scene, rp, { vary: 0.08 }));
   // young pines, stumps, boulders and small stones fill out the northern woods
   const sapling = await loadModel(new URL('../../assets/models/pine_sapling_medium/pine_sapling_medium_mid.glb', import.meta.url).href);
   const sp = [];
@@ -37,7 +37,7 @@ export async function build(scene, ctx) {
     if (Math.abs(heightAt(x + 2.5, z) - h) > 2.2) continue;
     sp.push({ x, y: h - 0.1, z, ry: Math.random() * Math.PI * 2, s: 1.3 + Math.random() * 1.1 });
   }
-  group.add(scatterModel(sapling.scene, sp));
+  group.add(scatterModel(sapling.scene, sp, { shadow: false, vary: 0.2 }));
   const stump = await loadModel(new URL('../../assets/models/tree_stump_01/tree_stump_01_1k.gltf', import.meta.url).href);
   const tp = [];
   for (let i = 0; i < 52; i++) {
@@ -46,14 +46,14 @@ export async function build(scene, ctx) {
     if (h < SEA_Y + 0.5) { i--; continue; }
     tp.push({ x, y: h - 0.05, z, ry: Math.random() * Math.PI * 2, s: 0.8 + Math.random() * 0.7 });
   }
-  group.add(scatterModel(stump.scene, tp));
+  group.add(scatterModel(stump.scene, tp, { vary: 0.1 }));
   const boulder = await loadModel(new URL('../../assets/models/boulder_01/boulder_01_1k.gltf', import.meta.url).href);
   const bop = [];
   for (let i = 0; i < 20; i++) {
     const x = (Math.random() - 0.5) * 760, z = -210 - Math.random() * 230;
     bop.push({ x, y: heightAt(x, z) - 0.5, z, ry: Math.random() * Math.PI * 2, s: 1 + Math.random() * 1.2 });
   }
-  group.add(scatterModel(boulder.scene, bop));
+  group.add(scatterModel(boulder.scene, bop, { vary: 0.08 }));
   const stones = await loadModel(new URL('../../assets/models/sand_rocks_small_01/sand_rocks_small_01_mid.glb', import.meta.url).href);
   const kp = [];
   for (let i = 0; i < 110; i++) {
@@ -62,7 +62,7 @@ export async function build(scene, ctx) {
     if (h < SEA_Y + 0.4) { i--; continue; }
     kp.push({ x, y: h - 0.08, z, ry: Math.random() * Math.PI * 2, s: 0.7 + Math.random() * 0.9 });
   }
-  group.add(scatterModel(stones.scene, kp));
+  group.add(scatterModel(stones.scene, kp, { shadow: false, vary: 0.15 }));
   const shrub = await loadModel(new URL('../../assets/models/shrub_01/shrub_01_mid.glb', import.meta.url).href);
   const shp = [];
   guard = 0;
@@ -72,7 +72,7 @@ export async function build(scene, ctx) {
     if (h < SEA_Y + 0.5) continue;
     shp.push({ x, y: h - 0.08, z, ry: Math.random() * Math.PI * 2, s: 0.8 + Math.random() * 0.8 });
   }
-  group.add(scatterModel(shrub.scene, shp));
+  group.add(scatterModel(shrub.scene, shp, { shadow: false, vary: 0.25 }));
   // ヴェリー・ヴァイラシェル大火山: jagged dark cone with a glowing crater, base buried
   const vx = -255, vz = -385;
   const vGeo = new THREE.ConeGeometry(92, 110, 36, 4);

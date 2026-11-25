@@ -11,12 +11,18 @@ export function loadModel(url) {
 }
 
 // Scatter a loaded GLTF model as InstancedMeshes (one per source mesh).
-export function scatterModel(gltfScene, placements) {
+// opts.shadow=false skips the shadow pass for ground cover (grass, shrubs, small
+// stones): with thousands of instances the shadow render costs as much as the
+// main render. opts.vary (0..1) adds deterministic per-instance tint variation
+// so repeated props do not look cloned.
+export function scatterModel(gltfScene, placements, opts = {}) {
   const group = new THREE.Group();
   const meshes = [];
   gltfScene.updateMatrixWorld(true);
   gltfScene.traverse(o => { if (o.isMesh) meshes.push(o); });
   const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler();
+  const vary = opts.vary || 0;
+  const tint = new THREE.Color();
   for (const src of meshes) {
     const local = src.matrixWorld.clone();
     const im = new THREE.InstancedMesh(src.geometry, src.material, placements.length);
@@ -27,8 +33,18 @@ export function scatterModel(gltfScene, placements) {
         new THREE.Vector3(p.s || 1, (p.sy || p.s || 1), p.s || 1));
       m4.multiplyMatrices(place, local);
       im.setMatrixAt(i, m4);
+      if (vary > 0) {
+        const h1 = Math.sin(i * 127.1 + p.x * 311.7 + p.z * 74.7) * 43758.5453;
+        const r1 = h1 - Math.floor(h1);
+        const h2 = Math.sin(i * 269.5 + p.z * 183.3 + p.x * 41.3) * 28001.8384;
+        const r2 = h2 - Math.floor(h2);
+        const b = 1 - vary / 2 + r1 * vary;
+        tint.setRGB(b * (1 + (r2 - 0.5) * vary * 0.6), b, b * (1 - (r2 - 0.5) * vary * 0.6));
+        im.setColorAt(i, tint);
+      }
     });
-    im.castShadow = true; im.receiveShadow = true;
+    if (vary > 0 && im.instanceColor) im.instanceColor.needsUpdate = true;
+    im.castShadow = opts.shadow !== false; im.receiveShadow = true;
     group.add(im);
   }
   return group;

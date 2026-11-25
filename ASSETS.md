@@ -17,3 +17,9 @@ All external assets are **CC0** from [Poly Haven](https://polyhaven.com) (downlo
 
 ## Notes
 - three.js r160 is vendored under `lib/` (MIT). GLTFLoader + BufferGeometryUtils under `lib/addons/`.
+
+## Lite pass (2026-11-25, dzyai式の軽量化)
+- 全モデルを実ゲーム向けのポリゴン数へ削減（松 178k→74k、苗木 55k→2.8k、小石 59k→4.8k、草 2.5k→370 など）。地域あたりの総ポリゴンは南 29.8M→6.1M、草原 30.5M→3.8M。
+- 松は量子化済みGLBへの再間引きが葉を壊すため、Blenderで非量子化に書き出してから間引きした。
+- 草・低木・小石・苗木・枯れ枝は影を落とさない（シャドウパスのコスト削減）。個体ごとの色味のばらつき（instanceColor）を追加。
+- レンダラーは ACES トーンマッピング＋画素密度上限 1.5。
